@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TritonHacks 2026</title>
+<meta name="description" content="TritonHacks is a weekend-long high school hackathon at UC San Diego aimed at providing equitable opportunities to learn CS. Sign up by May 1st, 11:59pm.">
+<style>
+  @font-face {
+    font-family: 'Kalam';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Kalam-Regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Kalam';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url('fonts/Kalam-Bold.woff2') format('woff2');
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --stage-width: 800px;
+    --cream: #f5f2ed;
+    --cork-shadow: 0 0 40px rgba(0,0,0,0.6);
+    --paper-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    --ink: #1a1a1a;
+    --pink-paper: #eed6de;
+    --green-accent: #4aae8c;
+    --green-dark: #1d5140;
+  }
+
+  html {
+    min-height: 100%;
+    background-color: #b8956a;
+    background-image: url('assets/cork-bg.png');
+    background-size: 400px auto;
+    background-repeat: repeat;
+    background-attachment: fixed;
+  }
+
+  body {
+    min-height: 100%;
+    background: transparent;
+    font-family: 'Kalam', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; }
+
+  /* ═══════════════ STAGE (multi-section flow) ═══════════════ */
+  .page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    container-type: inline-size;
+    container-name: stage;
+  }
+
+  /* ═══════════════ SCROLL REVEAL ═══════════════ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal.delay-1 { transition-delay: 0.15s; }
+  .reveal.delay-2 { transition-delay: 0.3s; }
+  .reveal.delay-3 { transition-delay: 0.45s; }
+
+  /* ═══════════════ SUBTLE WIGGLE ANIMATION ═══════════════ */
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(var(--wiggle-base, 0deg)); }
+    50% { transform: rotate(calc(var(--wiggle-base, 0deg) + var(--wiggle-amount, 1deg))); }
+  }
+  .wiggle {
+    animation: wiggle 6s ease-in-out infinite;
+  }
+
+  /* ═══════════════ SECTION: HERO ═══════════════ */
+  /* Breaks out of the stage container to span the full viewport width */
+  .section-hero {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    aspect-ratio: 800 / 620;
+  }
+  .section-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ═══════════════ SECTION: BRIEF (pink paper) ═══════════════ */
+  .section-brief {
+    position: relative;
+    padding: 60px 6% 40px;
+  }
+  .brief-paper {
+    position: relative;
+    width: 72%;
+    margin: 0 0 0 auto;
+    --wiggle-base: -1deg;
+    --wiggle-amount: 0.8deg;
+  }
+  .brief-paper img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2));
+  }
+  .brief-paper p {
+    position: absolute;
+    top: 24%;
+    left: 32%;
+    width: 62%;
+    font-size: 20px;
+    line-height: 1.35;
+    color: var(--ink);
+    text-align: right;
+  }
+
+  /* ═══════════════ SECTION: ABOUT ═══════════════ */
+  .section-about {
+    position: relative;
+    padding: 80px 6% 60px;
+  }
+  .about-paper {
+    position: relative;
+    background: #fefbf2;
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 34px,
+        #b8d5e8 34px,
+        #b8d5e8 35px
+      );
+    padding: 60px 48px 50px;
+    box-shadow: var(--paper-shadow);
+    transform: rotate(-0.8deg);
+    border-radius: 2px;
+    width: 88%;
+    margin: 0 auto;
+  }
+  /* Torn paper edge effect — top */
+  .about-paper::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 12px;
+    background: #fefbf2;
+    clip-path: polygon(
+      0 100%, 3% 60%, 6% 90%, 10% 50%, 14% 85%, 19% 55%, 23% 95%, 28% 60%,
+      33% 90%, 38% 55%, 43% 85%, 48% 60%, 53% 90%, 58% 50%, 63% 85%, 68% 60%,
+      73% 95%, 78% 55%, 83% 85%, 88% 60%, 92% 90%, 96% 55%, 100% 85%, 100% 100%
+    );
+  }
+  /* Red vertical margin line */
+  .about-paper::after {
+    content: "";
+    position: absolute;
+    left: 42px;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    background: #d88;
+    opacity: 0.55;
+  }
+  .about-paper h2 {
+    font-weight: 700;
+    font-size: 34px;
+    margin-bottom: 20px;
+    padding-left: 28px;
+    color: #2a2a2a;
+  }
+  .about-paper p {
+    font-size: 19px;
+    line-height: 1.55;
+    padding-left: 28px;
+    margin-bottom: 16px;
+    color: var(--ink);
+  }
+  .about-paper p:last-child { margin-bottom: 0; }
+  /* Paperclip on the about paper */
+  .about-clip {
+    position: absolute;
+    top: -18px;
+    right: 60px;
+    width: 42px;
+    height: 72px;
+    z-index: 3;
+    transform: rotate(8deg);
+  }
+
+  /* ═══════════════ SECTION: COUNTDOWN ═══════════════ */
+  .section-countdown {
+    padding: 40px 6% 60px;
+    text-align: center;
+  }
+  .countdown-label {
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    font-size: 26px;
+    color: #fff;
+    margin-bottom: 18px;
+    text-shadow: 2px 2px 0 #1a1a1a, -1px -1px 0 #1a1a1a, 1px -1px 0 #1a1a1a, -1px 1px 0 #1a1a1a;
+    transform: rotate(-2deg);
+    display: inline-block;
+  }
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .countdown-cell {
+    background: #fffbe8;
+    padding: 16px 14px 14px;
+    min-width: 96px;
+    box-shadow: var(--paper-shadow);
+    position: relative;
+  }
+  .countdown-cell:nth-child(1) { transform: rotate(-3deg); background: #ffd9d9; }
+  .countdown-cell:nth-child(2) { transform: rotate(2deg); background: #d9ecff; }
+  .countdown-cell:nth-child(3) { transform: rotate(-2deg); background: #d9ffe3; }
+  .countdown-cell:nth-child(4) { transform: rotate(3deg); background: #fff3d9; }
+
+  .countdown-num {
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 1;
+    color: #1a1a1a;
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-unit {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+    color: #555;
+  }
+  .countdown-over {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 2px 2px 0 #1a1a1a;
+  }
+
+  /* ═══════════════ SECTION: FAQ ═══════════════ */
+  .section-faq {
+    padding: 40px 6% 70px;
+  }
+  .faq-heading {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .faq-heading h2 {
+    display: inline-block;
+    font-size: 54px;
+    font-weight: 700;
+    background: #fff;
+    padding: 8px 28px;
+    box-shadow: var(--paper-shadow);
+    transform: rotate(-1.5deg);
+    color: #c44;
+    letter-spacing: 2px;
+    border: 2px dashed #c44;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 92%;
+    margin: 0 auto;
+  }
+  .faq-item {
+    background: #fffdf5;
+    box-shadow: var(--paper-shadow);
+    padding: 18px 28px;
+    cursor: pointer;
+    position: relative;
+  }
+  .faq-item:nth-child(odd) { transform: rotate(-0.7deg); }
+  .faq-item:nth-child(even) { transform: rotate(0.8deg); background: #f6fbff; }
+  .faq-item[open] { background: #fff9dc; }
+  .faq-item summary {
+    font-size: 22px;
+    font-weight: 700;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #2a2a2a;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: "+";
+    font-size: 32px;
+    line-height: 1;
+    color: #c44;
+    font-weight: 400;
+    transition: transform 0.2s;
+  }
+  .faq-item[open] summary::after {
+    transform: rotate(45deg);
+  }
+  .faq-answer {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1.5px dashed #ccc;
+    color: #333;
+  }
+
+  /* ═══════════════ SECTION: SPONSORS ═══════════════ */
+  .section-sponsors {
+    position: relative;
+    padding: 40px 0 60px;
+  }
+  .sponsors-title-img {
+    display: block;
+    width: 68%;
+    margin: 0 auto -10px;
+    position: relative;
+    z-index: 3;
+    --wiggle-base: 1deg;
+    --wiggle-amount: -1deg;
+  }
+  .sponsors-paper-wrap {
+    position: relative;
+    width: 88%;
+    margin: 0 auto;
+  }
+  .sponsors-paper-wrap > img.paper-bg {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2));
+  }
+
+  .logo {
+    position: absolute;
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+  .logo:hover {
+    transform: scale(1.08) rotate(-1deg) !important;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+  .logo img, .logo svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* Row 1: cs foreach + CSE UCSD */
+  .logo-csforeach { top: 26%; left: 10%; width: 22%; transform: rotate(-2deg); }
+  .logo-cse { top: 22%; left: 42%; width: 13%; transform: rotate(2deg); }
+  /* Row 2: UCSD CREATE + Jane Street */
+  .logo-ucsd { top: 50%; left: 8%; width: 25%; transform: rotate(1deg); }
+  .logo-janestreet { top: 58%; left: 40%; width: 24%; transform: rotate(-1deg); }
+
+  .sponsors-thanks {
+    position: absolute;
+    top: 29%;
+    left: 68%;
+    width: 26%;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--ink);
+    text-align: center;
+  }
+
+  /* ═══════════════ SECTION: DEADLINE STRIP ═══════════════ */
+  .section-deadline-strip {
+    padding: 18px 4% 8px;
+    text-align: center;
+  }
+  .deadline-strip {
+    display: inline-block;
+    background: #fff8dc;
+    padding: 10px 28px;
+    border: 2px dashed #c44;
+    border-radius: 4px;
+    box-shadow: var(--paper-shadow);
+    transform: rotate(-0.6deg);
+  }
+  .deadline-strip-text {
+    font-family: 'Kalam', cursive;
+    font-weight: 400;
+    font-size: clamp(14px, 1.9cqw, 22px);
+    color: #2a2a2a;
+    line-height: 1.3;
+  }
+  .deadline-strip-text strong {
+    color: #c44;
+    font-weight: 700;
+  }
+  .deadline-strip-text a {
+    color: #1d5140;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 3px;
+    margin-left: 6px;
+    transition: color 0.2s;
+  }
+  .deadline-strip-text a:hover {
+    color: #4aae8c;
+  }
+
+  /* ═══════════════ SECTION: SIGN UP (scrapbook collage) ═══════════════ */
+  .section-signup {
+    position: relative;
+    padding: 20px 3% 50px;
+    min-height: 500px;
+  }
+  .signup-title-img {
+    display: block;
+    width: 60%;
+    margin: 0 0 0 2%;
+    position: relative;
+    z-index: 5;
+  }
+  .stars-accent {
+    position: absolute;
+    top: 60px;
+    left: 58%;
+    width: 13%;
+    transform: rotate(-5deg);
+    z-index: 5;
+  }
+  .stars-accent img { display: block; width: 100%; height: auto; }
+
+  /* Music sheet paper behind the collage — bottom edge aligned with grid paper's bottom edge */
+  .music-sheet-bg {
+    position: absolute;
+    bottom: 105px;
+    right: 0%;
+    width: 26%;
+    z-index: 1;
+    transform: rotate(6deg);
+    opacity: 0.92;
+    transform-origin: bottom right;
+  }
+  .music-sheet-bg img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));
+  }
+
+  /* Collage row: grid paper on left, starburst overlapping right edge */
+  .signup-collage {
+    position: relative;
+    margin-top: -20px;
+    padding: 0 2%;
+    height: calc(70cqw * 0.83 + 60px);
+    min-height: 420px;
+  }
+  .grid-paper-wrap {
+    position: absolute;
+    top: 30px;
+    left: 0%;
+    width: 70%;
+    transform: rotate(-4deg);
+    z-index: 2;
+    transition: transform 0.25s ease;
+  }
+  .grid-paper-wrap:hover {
+    transform: rotate(-4deg) scale(1.03);
+  }
+  .grid-paper-wrap a {
+    display: block;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+  }
+  .grid-paper-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2));
+  }
+  .grid-paper-wrap .sign-up-here {
+    position: absolute;
+    top: 48%;
+    left: 10%;
+    width: 82%;
+    font-weight: 700;
+    font-size: clamp(34px, 7cqw, 77px);
+    color: var(--ink);
+    line-height: 1;
+    transform: rotate(-3deg);
+    white-space: nowrap;
+  }
+  .grid-paper-wrap .hackathon-date {
+    position: absolute;
+    top: 60%;
+    left: 10%;
+    width: 82%;
+    font-weight: 700;
+    font-size: clamp(24px, 4.2cqw, 54px);
+    color: var(--ink);
+    line-height: 1;
+    transform: rotate(-3deg);
+    white-space: nowrap;
+  }
+  .red-pin {
+    position: absolute;
+    top: 22%;
+    left: 22%;
+    width: clamp(14px, 2cqw, 26px);
+    height: clamp(14px, 2cqw, 26px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff7070, #c41818 55%, #6f0000);
+    box-shadow: 0 3px 5px rgba(0,0,0,0.45), inset -1px -2px 3px rgba(0,0,0,0.35);
+    z-index: 3;
+  }
+  .grid-washi {
+    position: absolute;
+    top: 6%;
+    right: 8%;
+    width: 22%;
+    height: 4%;
+    background: linear-gradient(to bottom, rgba(210,210,205,0.85), rgba(180,180,175,0.9), rgba(210,210,205,0.85));
+    transform: rotate(12deg);
+    border-left: 1px dashed rgba(120,120,115,0.5);
+    border-right: 1px dashed rgba(120,120,115,0.5);
+    z-index: 3;
+  }
+
+  /* Green starburst positioned to OVERLAP the right side of the grid paper */
+  .deadline-badge {
+    position: absolute;
+    top: 18%;
+    right: 4%;
+    width: 38%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(4deg);
+    z-index: 4;
+    text-decoration: none;
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+  .deadline-badge:hover {
+    transform: rotate(4deg) scale(1.05);
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+  }
+  .deadline-badge .burst {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .deadline-badge .text {
+    position: relative;
+    z-index: 2;
+    font-weight: 400;
+    font-size: clamp(14px, 2.4cqw, 32px);
+    line-height: 1.35;
+    color: #fafff6;
+    text-align: center;
+    padding: 0 14%;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+
+  /* ═══════════════ SECTION: CONTACT / FOOTER ═══════════════ */
+  .section-contact {
+    padding: 60px 6% 80px;
+    text-align: center;
+    position: relative;
+  }
+  .contact-paper {
+    background: #fffdf0;
+    padding: 36px 40px 32px;
+    width: 78%;
+    margin: 0 auto;
+    box-shadow: var(--paper-shadow);
+    transform: rotate(-0.5deg);
+    position: relative;
+  }
+  .contact-paper::before {
+    content: "";
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 28px;
+    background: linear-gradient(to bottom, rgba(255,255,200,0.7), rgba(255,220,100,0.85));
+    border-left: 1px dashed rgba(180,140,50,0.4);
+    border-right: 1px dashed rgba(180,140,50,0.4);
+  }
+  .contact-paper h3 {
+    font-weight: 700;
+    font-size: 28px;
+    margin-bottom: 4px;
+    color: #2a2a2a;
+  }
+  .contact-sub {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 18px;
+  }
+  .contact-email {
+    display: inline-block;
+    font-size: 22px;
+    font-weight: 700;
+    color: #c44;
+    padding: 8px 20px;
+    background: #fff;
+    border: 2px dashed #c44;
+    text-decoration: none;
+    transition: transform 0.2s;
+    margin-bottom: 22px;
+  }
+  .contact-email:hover {
+    transform: scale(1.05) rotate(-1deg);
+  }
+  .socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 6px;
+  }
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    color: #fff;
+    text-decoration: none;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .social-btn:hover {
+    transform: scale(1.1) rotate(-5deg);
+    background: #c44;
+  }
+  .social-btn svg { width: 26px; height: 26px; fill: currentColor; }
+
+  .footer-credit {
+    margin-top: 34px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+  }
+
+  /* ═══════════════ RESPONSIVE (always fluid, container-scoped) ═══════════════ */
+  /* Text sizes scale with stage container width using clamp(min, preferred, max) */
+  .brief-paper p { font-size: clamp(11px, 2.4cqw, 28px); }
+  .sponsors-thanks { font-size: clamp(12px, 3cqw, 28px); }
+  .deadline-badge .text { font-size: clamp(14px, 2.2cqw, 30px); }
+  .grid-paper-wrap .sign-up-here { font-size: clamp(34px, 6cqw, 77px); }
+  .red-pin { width: clamp(14px, 2cqw, 26px); height: clamp(14px, 2cqw, 26px); }
+  .about-paper h2 { font-size: clamp(24px, 3.6cqw, 46px); }
+  .about-paper p { font-size: clamp(14px, 2cqw, 26px); }
+  .faq-item summary { font-size: clamp(16px, 2.4cqw, 28px); }
+  .faq-answer { font-size: clamp(14px, 1.9cqw, 24px); }
+  .faq-heading h2 { font-size: clamp(32px, 5.5cqw, 68px); }
+  .countdown-num { font-size: clamp(28px, 4.5cqw, 58px); }
+  .countdown-unit { font-size: clamp(10px, 1.2cqw, 16px); letter-spacing: 1.5px; }
+  .countdown-cell { min-width: clamp(80px, 10cqw, 120px); padding: clamp(12px, 1.4cqw, 20px) clamp(10px, 1.2cqw, 18px); }
+  .countdown-label { font-size: clamp(18px, 2.6cqw, 32px); }
+  .contact-paper h3 { font-size: clamp(22px, 3cqw, 38px); }
+  .contact-sub { font-size: clamp(14px, 1.9cqw, 24px); }
+  .contact-email { font-size: clamp(16px, 2.4cqw, 30px); }
+  .footer-credit { font-size: clamp(12px, 1.2cqw, 16px); }
+
+  /* Scale the decorative paperclip on about section */
+  .about-clip {
+    width: clamp(32px, 3.4cqw, 52px);
+    height: clamp(56px, 6cqw, 92px);
+  }
+
+  /* Scale social buttons too */
+  .social-btn {
+    width: clamp(44px, 4.8cqw, 64px);
+    height: clamp(44px, 4.8cqw, 64px);
+  }
+  .social-btn svg {
+    width: clamp(22px, 2.4cqw, 32px);
+    height: clamp(22px, 2.4cqw, 32px);
+  }
+
+  /* Adjust padding on small screens for tighter layout */
+  @media (max-width: 500px) {
+    .about-paper { padding: 32px 22px 28px; }
+    .about-paper::after { left: 28px; }
+    .about-paper h2, .about-paper p { padding-left: 14px; }
+    .countdown { gap: 6px; }
+    .contact-paper { padding: 28px 20px 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="stage">
+
+    <!-- ═══ HERO ═══ -->
+    <section class="section-hero">
+      <img src="assets/tritonhacks-title.png" alt="TritonHacks 2026">
+    </section>
+
+    <!-- ═══ SIGN UP COLLAGE (scrapbook layout matching Figma reference) ═══ -->
+    <section class="section-signup">
+      <!-- Sign up! title on top -->
+      <img class="signup-title-img reveal" src="assets/signup-title.png" alt="Sign up!">
+
+      <!-- Stars accent to the right of the title -->
+      <div class="stars-accent reveal delay-1">
+        <img src="assets/stars.png" alt="">
+      </div>
+
+      <!-- Collage row: grid paper on left + green starburst overlapping right edge -->
+      <div class="signup-collage">
+        <!-- Music sheet peeking behind on the right -->
+        <div class="music-sheet-bg reveal delay-1">
+          <img src="assets/music-sheet.png" alt="">
+        </div>
+
+        <!-- Grid paper with "Sign up here!" -->
+        <div class="grid-paper-wrap reveal delay-2">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdn-wfh-dnBbPzdnbcr4O9uumPk-QdjhyfetRPX-u5o9BEoYw/viewform" target="_blank" rel="noopener">
+            <img src="assets/grid-paper.png" alt="">
+            <span class="grid-washi"></span>
+            <span class="red-pin"></span>
+            <div class="sign-up-here">Sign up here!</div>
+            <div class="hackathon-date">May 16 & 17</div>
+          </a>
+        </div>
+
+        <!-- Green starburst overlapping grid paper -->
+        <a class="deadline-badge reveal delay-3" href="https://docs.google.com/forms/d/e/1FAIpQLSdn-wfh-dnBbPzdnbcr4O9uumPk-QdjhyfetRPX-u5o9BEoYw/viewform" target="_blank" rel="noopener">
+          <svg class="burst" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <polygon
+              points="110,0 128,62 178,24 172,88 218,78 180,130 216,172 158,158 172,218 118,172 90,220 72,160 18,198 36,140 0,120 52,92 10,54 68,60 60,0 100,56"
+              fill="#4aae8c" stroke="#1d5140" stroke-width="1.5" stroke-linejoin="miter"/>
+          </svg>
+          <div class="text">Sign&nbsp;up<br>deadline:<br>May 1st<br>11:59pm</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ═══ COUNTDOWN (moved right below signup) ═══ -->
+    <section class="section-countdown">
+      <div class="reveal">
+        <div class="countdown-label">Applications close in…</div>
+        <div class="countdown" id="countdown" aria-live="polite">
+          <div class="countdown-cell"><div class="countdown-num" id="cd-days">--</div><div class="countdown-unit">Days</div></div>
+          <div class="countdown-cell"><div class="countdown-num" id="cd-hours">--</div><div class="countdown-unit">Hours</div></div>
+          <div class="countdown-cell"><div class="countdown-num" id="cd-mins">--</div><div class="countdown-unit">Mins</div></div>
+          <div class="countdown-cell"><div class="countdown-num" id="cd-secs">--</div><div class="countdown-unit">Secs</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ BRIEF (pink paper) ═══ -->
+    <section class="section-brief">
+      <div class="brief-paper reveal wiggle">
+        <img src="assets/pink-paper-flower.png" alt="">
+        <p>TritonHacks is a weekend-long highschool hackathon, aimed at providing equitable opportunities for students to learn CS by creating a project in teams of up to 4.</p>
+      </div>
+    </section>
+
+    <!-- ═══ ABOUT ═══ -->
+    <section class="section-about">
+      <div class="about-paper reveal">
+        <!-- decorative paperclip -->
+        <svg class="about-clip" viewBox="0 0 42 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 21 4 Q 8 4 8 20 L 8 54 Q 8 66 21 66 Q 34 66 34 54 L 34 22 Q 34 14 26 14 Q 18 14 18 22 L 18 50"
+            stroke="#e88ba3" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <h2>About TritonHacks</h2>
+        <p>TritonHacks is a two-day high school level hackathon aimed at providing greater access to CS education, specifically for disadvantaged local communities lacking their own resources to prepare students for careers in STEM fields.</p>
+        <p>If you're interested in becoming a recruit, scroll up to fill out our application! TritonHacks is meant for everyone of any skill or experience level! We want you to have fun and learn something new!</p>
+      </div>
+    </section>
+
+    <!-- ═══ FAQ ═══ -->
+    <section class="section-faq">
+      <div class="faq-heading reveal">
+        <h2>FAQ</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item reveal">
+          <summary>What is a hackathon?</summary>
+          <div class="faq-answer">It's basically a sprint for programmers! Our hackathon is targeted for high school students but typically a group of people interested in programming come together to create a project in a sprint-like event!</div>
+        </details>
+        <details class="faq-item reveal">
+          <summary>What if I don't know anything about coding?</summary>
+          <div class="faq-answer">No worries! Our hackathon is designed for high school students of all experience levels! We have starter kits for everyone, no matter how much experience you have had!</div>
+        </details>
+        <details class="faq-item reveal">
+          <summary>Do I work individually or with a team?</summary>
+          <div class="faq-answer">Either! We strongly recommend working in a team as hackathons are designed to be completed in groups and the work can be distributed for a more collaborative atmosphere! We have a 4 person max!</div>
+        </details>
+        <details class="faq-item reveal">
+          <summary>How do I find a team?</summary>
+          <div class="faq-answer">During registration we ask if you already have a team, if you do, great! If not we will form teams with students who are also interested in working in teams.</div>
+        </details>
+        <details class="faq-item reveal">
+          <summary>What will a day at the hackathon look like?</summary>
+          <div class="faq-answer">While you are working to complete your project, there will be food provided, and there will be workshops and panels throughout the day to teach you valuable skills and concepts!</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ═══ SPONSORS ═══ -->
+    <section class="section-sponsors">
+      <img class="sponsors-title-img reveal wiggle" src="assets/sponsors-title.png" alt="Sponsors">
+      <div class="sponsors-paper-wrap reveal delay-1">
+        <img class="paper-bg" src="assets/sponsors-paper.png" alt="">
+
+        <a class="logo logo-csforeach" href="https://www.csforeach.org/" target="_blank" rel="noopener" aria-label="CS for Each">
+          <img src="assets/csforeach.png" alt="CS for Each">
+        </a>
+        <a class="logo logo-cse" href="https://cse.ucsd.edu/" target="_blank" rel="noopener" aria-label="UCSD CSE">
+          <img src="assets/cse-ucsd.png" alt="UCSD CSE">
+        </a>
+        <a class="logo logo-ucsd" href="https://create.ucsd.edu/" target="_blank" rel="noopener" aria-label="UC San Diego CREATE">
+          <img src="assets/ucsd-create.png" alt="UC San Diego CREATE">
+        </a>
+        <a class="logo logo-janestreet" href="https://www.janestreet.com/" target="_blank" rel="noopener" aria-label="Jane Street">
+          <img src="assets/jane-street.png" alt="Jane Street">
+        </a>
+
+        <p class="sponsors-thanks">Thanks to our sponsors for making this event possible!</p>
+      </div>
+    </section>
+
+    <!-- ═══ CONTACT ═══ -->
+    <section class="section-contact">
+      <div class="contact-paper reveal">
+        <h3>Questions?</h3>
+        <div class="contact-sub">Contact our team</div>
+        <a class="contact-email" href="mailto:tritonhacks@gmail.com">tritonhacks@gmail.com</a>
+        <div class="socials">
+          <a class="social-btn" href="https://www.instagram.com/ucsdtritonhacks/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.2c3.2 0 3.6 0 4.8.07 1.18.05 1.8.24 2.22.4.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.35 1.04.4 2.22.06 1.2.07 1.6.07 4.8s0 3.6-.07 4.8c-.05 1.18-.24 1.8-.4 2.22-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.04.35-2.22.4-1.2.06-1.6.07-4.8.07s-3.6 0-4.8-.07c-1.18-.05-1.8-.24-2.22-.4-.56-.22-.96-.48-1.38-.9a3.7 3.7 0 0 1-.9-1.38c-.16-.42-.35-1.04-.4-2.22C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.8c.05-1.18.24-1.8.4-2.22.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.04-.35 2.22-.4C8.4 2.2 8.8 2.2 12 2.2M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.8.31-1.48.73-2.15 1.4A5.96 5.96 0 0 0 .6 4.18C.3 4.94.1 5.82.04 7.1.01 8.37 0 8.78 0 12s.01 3.63.07 4.9c.06 1.28.26 2.16.56 2.92.31.8.73 1.48 1.4 2.15a5.96 5.96 0 0 0 2.15 1.4c.76.3 1.64.5 2.92.56 1.28.06 1.69.07 4.9.07s3.63-.01 4.9-.07c1.28-.06 2.16-.26 2.92-.56.8-.31 1.48-.73 2.15-1.4a5.96 5.96 0 0 0 1.4-2.15c.3-.76.5-1.64.56-2.92.06-1.28.07-1.69.07-4.9s-.01-3.63-.07-4.9c-.06-1.28-.26-2.16-.56-2.92a5.96 5.96 0 0 0-1.4-2.15A5.96 5.96 0 0 0 19.82.6C19.06.3 18.18.1 16.9.04 15.63.01 15.22 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 1 0 2.88 1.44 1.44 0 0 1 0-2.88z"/>
+            </svg>
+          </a>
+          <a class="social-btn" href="https://www.facebook.com/triton.hacks" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.12 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-credit">© TritonHacks 2026 · UC San Diego</div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // ═══ LIVE COUNTDOWN to May 1st, 2026, 11:59pm Pacific Time ═══
+  // May 1st 2026 11:59pm PDT (UTC-7, since May is in daylight time) = May 2 06:59 UTC
+  const deadline = new Date('2026-05-02T06:59:00Z').getTime();
+  const els = {
+    days: document.getElementById('cd-days'),
+    hours: document.getElementById('cd-hours'),
+    mins: document.getElementById('cd-mins'),
+    secs: document.getElementById('cd-secs'),
+    container: document.getElementById('countdown'),
+  };
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function tick() {
+    const now = Date.now();
+    const diff = deadline - now;
+    if (diff <= 0) {
+      els.container.innerHTML = '<div class="countdown-over">📭 Applications closed</div>';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    els.days.textContent = pad(d);
+    els.hours.textContent = pad(h);
+    els.mins.textContent = pad(m);
+    els.secs.textContent = pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ═══ SCROLL REVEAL ═══
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
